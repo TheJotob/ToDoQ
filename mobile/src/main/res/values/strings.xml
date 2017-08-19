@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ToDoQ</string>
+    <string name="action_settings">Settings</string>
+    <string name="postponed">Postponed</string>
+    <string name="done">Done</string>
+    <string name="delete">Delete</string>
+</resources>
