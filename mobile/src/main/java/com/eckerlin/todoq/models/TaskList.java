@@ -7,47 +7,51 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 
 public class TaskList {
-    private Task currentTask;
-    private BufferedReader in;
-    private FileWriter out;
+    private RandomAccessFile file;
 
-    public TaskList(File taskFile) {
-        try {
-            in = new BufferedReader(new FileReader(taskFile));
-            out = new FileWriter(taskFile);
-        } catch (FileNotFoundException e) {
+    public TaskList(File taskFile) throws IOException {
+        if (!taskFile.exists())
+            taskFile.createNewFile();
 
-        } catch (IOException e) {
-
-        }
+        file = new RandomAccessFile(taskFile, "rw");
     }
 
     public boolean empty() throws IOException {
-        try {
-            boolean empty = (in.read() == -1);
-            in.reset();
-            return empty;
-        } catch (IOException e) {
-            return true;
-        }
+        file.seek(0);
+        return (file.read() == -1);
     }
 
-    public Task peek() {
-        return new Task("peek");
-    }
-
-    public Task pop() throws IOException {
+    public Task peek() throws IOException {
         return getNextTask();
     }
 
-    private Task getNextTask() throws IOException {
-        String s = in.readLine();
-        return new Task(s);
+    public Task pop() throws IOException {
+        Task t = getNextTask();
+        return t;
+    }
+
+    private Task getNextTask() throws IOException, UnsupportedOperationException {
+        file.seek(0);
+        String s = file.readLine();
+           if (s == null)
+                throw new UnsupportedOperationException();
+
+            return new Task(s);
+    }
+
+    private void deleteFirstLine() throws IOException {
+
     }
 
     public void push(Task todo) throws IOException {
-        out.write(todo.toString() + '\n');
+        file.seek(file.length());
+        file.writeChars(todo.toString() + '\n');
+    }
+
+    public void close() throws IOException {
+        file.close();
     }
 }
