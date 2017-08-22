@@ -68,7 +68,9 @@ public class TaskListTest {
 
         list.push(t1);
         list.push(t2);
+        assertEquals(t1, list.peek());
         assertEquals(t1, list.pop());
+        assertNotEquals(t1, list.peek());
         assertEquals(t2, list.pop());
     }
 
@@ -79,6 +81,12 @@ public class TaskListTest {
 
         list.push(t1);
         list.push(t2);
+        char[] peeked = list.peek().getText().toCharArray();
+        for(char c : peeked)
+            System.out.println((int) c);
+
+        System.out.println(list.peek().getText().toCharArray().length);
+        System.out.println(t1.getText().toCharArray().length);
         assertEquals(t1, list.peek());
         assertEquals(t1, list.peek());
     }
