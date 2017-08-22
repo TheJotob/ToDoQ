@@ -1,5 +1,7 @@
 package com.eckerlin.todoq.models;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -49,13 +51,16 @@ public class TaskList {
     private void deleteFirstLine() throws IOException {
         file.seek(0);
         file.readLine();
+        String cache = "";
         try {
-            String cache = file.readUTF();
-            file.close();
-            if (taskFile.delete() && taskFile.createNewFile())
-                file = new RandomAccessFile(taskFile, "rw");
+            cache = file.readUTF();
+        } catch (EOFException e) {
+        }
+        file.close();
+        if (taskFile.delete() && taskFile.createNewFile())
+            file = new RandomAccessFile(taskFile, "rw");
+        if(!cache.equals(""))
             file.writeUTF(cache);
-        } catch (EOFException e) {}
     }
 
     public void push(Task todo) throws IOException {

@@ -32,6 +32,12 @@ public class TaskListTest {
     @Test
     public void emptyShouldReturnTrueOnEmptyList() throws IOException {
         assertEquals(true, list.empty());
+
+        list.push(new Task("Test1"));
+        assertNotEquals(true, list.empty());
+
+        list.pop();
+        assertEquals(true, list.empty());
     }
 
     @Test
