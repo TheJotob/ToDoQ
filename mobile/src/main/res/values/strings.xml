@@ -5,4 +5,5 @@
     <string name="postponed">Postponed</string>
     <string name="done">Done</string>
     <string name="delete">Delete</string>
+    <string name="nothingToDo">Nothing left to do! :)</string>
 </resources>

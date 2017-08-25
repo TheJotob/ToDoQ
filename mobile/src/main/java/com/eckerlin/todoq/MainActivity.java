@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.eckerlin.todoq.models.Task;
 import com.eckerlin.todoq.models.TaskList;
 
 import java.io.File;
@@ -36,11 +37,7 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addEntry);
         fab.setOnClickListener(view -> {
             try {
-                list.close();
-                if (taskFile.delete())
-                    Log.d(this.getClass().getName(), "Deleted");
-                taskFile.createNewFile();
-                list = new TaskList(taskFile);
+                list.push(new Task("Test" + Math.random() * 10));
             } catch (IOException e) {
                 e.printStackTrace();
             }

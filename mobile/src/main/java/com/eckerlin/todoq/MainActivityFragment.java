@@ -1,6 +1,5 @@
 package com.eckerlin.todoq;
 
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,12 +14,16 @@ import com.eckerlin.todoq.models.Task;
 import com.eckerlin.todoq.models.TaskList;
 
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements Observer, View.OnClickListener {
     private MainActivity activity;
+
+    private TaskList list;
 
     private TextView lblCurrentTask;
     private Button btnDelete, btnPostpone;
@@ -34,43 +37,59 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         activity = (MainActivity) getActivity();
-        TaskList list = activity.getList();
-
-        try {
-            list.push(new Task("Test1"));
-            list.push(new Task("Test2"));
-            list.push(new Task("Test3"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        list = activity.getList();
+        list.addObserver(this);
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         lblCurrentTask = view.findViewById(R.id.lblCurrentTask);
         btnDelete = view.findViewById(R.id.deleteCurrent);
+        btnDelete.setOnClickListener(this);
 
-        updateView();
+        btnPostpone = view.findViewById(R.id.postponeCurrent);
+        btnPostpone.setOnClickListener(this);
 
-        btnDelete.setOnClickListener(btn -> {
-            try {
-                if (!activity.getList().empty())
-                    activity.getList().pop();
-            } catch (IOException e) {
-                Log.e("ToDoQ", e.getMessage());
-            }
-            updateView();
-        });
+        chbDone = view.findViewById(R.id.doneCurrent);
+        chbDone.setOnClickListener(this);
 
         return view;
     }
 
-    public void updateView() {
+    @Override
+    public void update(Observable observable, Object o) {
         try {
-            if (activity.getList().empty())
-                lblCurrentTask.setText("Nothing left to do! :)");
-            else
+            if (list.empty()) {
+                lblCurrentTask.setText(getString(R.string.nothingToDo));
+                btnDelete.setVisibility(View.INVISIBLE);
+                btnPostpone.setVisibility(View.INVISIBLE);
+                chbDone.setVisibility(View.INVISIBLE);
+            } else {
                 lblCurrentTask.setText(activity.getList().peek().getText());
+                btnDelete.setVisibility(View.VISIBLE);
+                btnPostpone.setVisibility(View.VISIBLE);
+                chbDone.setVisibility(View.VISIBLE);
+            }
+            chbDone.setChecked(false);
         } catch (IOException e) {
             lblCurrentTask.setText(e.getMessage());
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        try {
+            if (list.empty())
+                return;
+
+            if (view.equals(btnDelete)) {
+                list.pop();
+            } else if (view.equals(btnPostpone)) {
+                Task t = activity.getList().pop();
+                list.push(t);
+            } else if (view.equals(chbDone)) {
+                list.pop();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
